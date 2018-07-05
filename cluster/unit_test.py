@@ -7,6 +7,7 @@ import pandas as pd
 from SOM import *
 from LVQ import *
 from KMeans import *
+from DBSCAN import *
 
 
 def test_load_data(path_=".\Input\melon_4.0.csv"):
@@ -52,6 +53,14 @@ def test_lvq_fit():
     return rst
 
 
+def test_dbscan_fit():
+    df = test_load_data(path_=".\Input\mmelon_4.0.csv")
+    db = DBSCAN(eps_=0.1, min_samples_=4)
+    db.fit(df.drop(["ID", "label"], axis=1))
+    print(db.ck)
+    return db
+
+
 if __name__ == '__main__':
     # 1
     # df = test_load_data()
@@ -61,4 +70,6 @@ if __name__ == '__main__':
     # 3
     # rst = test_kmeans_predict()
     # 4
-    rst = test_lvq_fit()
+    # rst = test_lvq_fit()
+    # 5
+    # rst = test_dbscan_fit()
