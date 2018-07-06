@@ -8,6 +8,7 @@ from SOM import *
 from LVQ import *
 from KMeans import *
 from DBSCAN import *
+from AGNES import *
 
 
 def test_load_data(path_=".\Input\melon_4.0.csv"):
@@ -61,6 +62,14 @@ def test_dbscan_fit():
     return db
 
 
+def test_agnes_fit():
+    df = test_load_data(path_=".\Input\mmelon_4.0.csv")
+    agnes = AGNES(k_=4, d_=max)
+    agnes.fit(df.drop(["ID", "label"], axis=1).values)
+    print(agnes.ck)
+    return agnes
+
+
 if __name__ == '__main__':
     # 1
     # df = test_load_data()
@@ -73,3 +82,5 @@ if __name__ == '__main__':
     # rst = test_lvq_fit()
     # 5
     # rst = test_dbscan_fit()
+    # 6
+    rest = test_agnes_fit()
