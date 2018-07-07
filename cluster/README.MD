@@ -1,21 +1,21 @@
 ## KMeans
 
-![KMeans Demo](assets/KMeans Demo.png)
+![KMeans Demo](assets/KMeans_Demo.png)
 
 ## LVQ
 ## DBSCAN
 
-![DBSCAN Demo](assets/DBSCAN Demo.png)
+![DBSCAN Demo](assets/DBSCAN_Demo.png)
 
 ## AGNES
 
-![AGNES Demo](assets/AGNES Demo.png)
+![AGNES Demo](assets/AGNES_Demo.png)
 
 
 
 ## SOM
 
-![SOM Demo](assets/SOM Demo.png)
+![SOM Demo](assets/SOM_Demo.png)
 
 ## Datatoys
 
