@@ -21,14 +21,21 @@ def test_smo_fit():
     df = test_load_data()
     df.set_index("ID", inplace=True)
 
-    som = SOM()
-    som.fit(df)
-    return df
+    som = SOM(d_=1)
+    som.fit(df.values)
+
+    return som, df
 
 
 def test_smo_predict():
     df = test_load_data()
-    return df
+    df.set_index("ID", inplace=True)
+    x = df.values
+    som = SOM(d_=1, k_=4)
+    som.fit(x)
+    rst = som.predict(x)
+    print(rst)
+    return som, df
 
 
 def test_kmeans_fit():
@@ -83,4 +90,8 @@ if __name__ == '__main__':
     # 5
     # rst = test_dbscan_fit()
     # 6
-    rest = test_agnes_fit()
+    # rest = test_agnes_fit()
+    # 7
+    # rst = test_smo_fit()
+    # 8
+    smo, df = test_smo_predict()
