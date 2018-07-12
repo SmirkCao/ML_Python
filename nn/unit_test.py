@@ -16,7 +16,7 @@ def test_mlp():
                   [1],
                   [1],
                   [0]])
-    mlpc = MLP(n_layers=4)
+    mlpc = MLP(n_layers=7, hidden_layer_sizes=[10, 5, 4])
     mlpc.fit(X, y)
     print(mlpc.predict(X))
     return mlpc

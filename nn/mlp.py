@@ -24,7 +24,8 @@ class MLP(object):
                  learning_rate=0.0001,
                  max_iter=60000,
                  random_state=2018,
-                 n_layers=3
+                 n_layers=3,
+                 hidden_layer_sizes=[100]
                  ):
         self.learning_rate_ = learning_rate
         self.coefs_ = None
@@ -35,11 +36,18 @@ class MLP(object):
         self.n_layers_ = n_layers
         self.layers_ = None
         self.layer_units = None
+        self.hidden_layer_sizes_ = hidden_layer_sizes
 
     def fit(self, x_, y_):
         np.random.seed(self.random_state_)
-        # todo update this method, related to n_layers
-        layer_units = [(3, 5), (5, 5), (5, 1)]
+        # generate layer_units based on n_layers and hidden_layer_sizes
+        fan_in = x_.shape[1]
+        fan_out = y_.shape[1]
+        n_units = [fan_in] + [100]*(self.n_layers_ - 2 - len(self.hidden_layer_sizes_)) + self.hidden_layer_sizes_ + [fan_out]
+        layer_units = []
+        for idx in range(len(n_units)-1):
+            layer_units.append(tuple(n_units[idx: idx+2]))
+        print(layer_units)
         coefs_ = [2 * np.random.random(layer_unit) - 1 for layer_unit in layer_units]
         # print(self.n_layers_, coefs_)  # 3, 2
         for n_iter_ in range(self.max_iter_):
