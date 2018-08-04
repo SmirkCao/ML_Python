@@ -1,9 +1,10 @@
-from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
+from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, MaxPool2D
 from keras.layers import Flatten, Dense, Dropout, BatchNormalization
 from keras.layers import Input, concatenate
 from keras.models import Model
 from keras import regularizers
 
+# Going deeper with convolutions 2014
 # Global Constants
 NB_CLASS = 20
 LEARNING_RATE = 0.01
@@ -14,7 +15,7 @@ GAMMA = 0.1
 DROPOUT = 0.4
 WEIGHT_DECAY = 0.0005
 LRN2D_NORM = True
-DATA_FORMAT = 'channels_last'
+DATA_FORMAT = 'channels_last'  # tensorflow
 USE_BN = True
 IM_WIDTH = 224
 IM_HEIGHT = 224
@@ -115,16 +116,15 @@ def create_model():
     INP_SHAPE = (224, 224, 3)
     img_input = Input(shape=INP_SHAPE)
     CONCAT_AXIS = 3
-
-    x = conv2D_lrn2d(img_input, 64, (7, 7), 2, padding='same', lrn2d_norm=False)
+    # convolution
+    x = Conv2D(filters=64, kernel_size=(7, 7), strides=(2, 2), input_shape=INP_SHAPE, padding='same')(img_input)
+    # max pool
     x = MaxPooling2D(pool_size=(3, 3), strides=2, padding='same', data_format=DATA_FORMAT)(x)
-    x = BatchNormalization()(x)
-
-    x = conv2D_lrn2d(x, 64, (1, 1), 1, padding='same', lrn2d_norm=False)
-
-    x = conv2D_lrn2d(x, 192, (3, 3), 1, padding='same', lrn2d_norm=True)
-    x = MaxPooling2D(pool_size=(3, 3), strides=2, padding='same', data_format=DATA_FORMAT)(x)
-
+    # convolution
+    x = Conv2D(filters=192, kernel_size=(3, 3), strides=(1, 1), padding='same')(x)
+    # max pool
+    x = MaxPool2D(pool_size=(3, 3), strides=2, padding='same', data_format=DATA_FORMAT)(x)
+    # inception(3a)
     x = inception_module(x, params=[(64,), (96, 128), (16, 32), (32,)], concat_axis=CONCAT_AXIS)  # 3a
     x = inception_module(x, params=[(128,), (128, 192), (32, 96), (64,)], concat_axis=CONCAT_AXIS)  # 3b
     x = MaxPooling2D(pool_size=(3, 3), strides=2, padding='same', data_format=DATA_FORMAT)(x)
