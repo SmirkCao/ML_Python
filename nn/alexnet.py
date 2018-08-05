@@ -16,6 +16,8 @@ from keras.layers import Dense, Flatten, Dropout
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 import numpy as np
 
+# Total params: 62,378,344
+
 
 class AlexNet(object):
     @staticmethod
