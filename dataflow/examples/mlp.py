@@ -1,22 +1,22 @@
 # -*-coding:utf-8-*-
 # Project: ML_Python  
-# Filename: nn
+# Filename: mlp
 # Author: 😏 <smirk dot cao at gmail dot com>
 from functools import reduce
 import numpy as np
 
 
-def sigmoid(x_):
-    return 1 / (1 + np.exp(-x_))
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
 
 
-def sigmoid_grad(y_):
+def sigmoid_grad(x):
     """
-    
-    :param y_: sigmoid(x)
+    derivative sigmoid
+    :param x: 
     :return: 
     """
-    return y_ * (1 - y_)
+    return x * (1 - x)
 
 
 class MLP(object):
@@ -61,8 +61,8 @@ class MLP(object):
                 self.layers_.append(layer_)
                 deltas_.append(1)
 
-            assert (len(self.layers_) == self.n_layers_)
-            assert (len(coefs_) == len(deltas_))
+            assert(len(self.layers_) == self.n_layers_)
+            assert(len(coefs_) == len(deltas_))
 
             # error
             error_ = y_ - self.layers_[-1]
