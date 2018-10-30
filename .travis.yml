@@ -4,3 +4,6 @@ python:
   - "3.7-dev"
   - "3.6"
   - "3.5"  
+script:
+  - cd dataflow
+  - make tests  
