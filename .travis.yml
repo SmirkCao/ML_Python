@@ -7,3 +7,6 @@ python:
 script:
   - cd dataflow
   - make tests  
+after_success:
+  - cd test
+  - codecov
