@@ -4,6 +4,13 @@
 # Author: 😏 <smirk dot cao at gmail dot com>
 from functools import reduce
 import numpy as np
+import logging
+"""
+deep feedforward network
+feedforward neural network
+multilayer perceptron, MLP
+
+"""
 
 
 def sigmoid(x):
@@ -47,9 +54,9 @@ class MLP(object):
         layer_units = []
         for idx in range(len(n_units)-1):
             layer_units.append(tuple(n_units[idx: idx+2]))
-        print(layer_units)
+        logger.info(layer_units)
         coefs_ = [2 * np.random.random(layer_unit) - 1 for layer_unit in layer_units]
-        # print(self.n_layers_, coefs_)  # 3, 2
+        # logger.info(self.n_layers_, coefs_)  # 3, 2
         for n_iter_ in range(self.max_iter_):
             # Feed forward through layers 0, 1, and 2
             self.layers_ = []
@@ -75,10 +82,10 @@ class MLP(object):
             for idx in range(self.n_layers_ - 1):
                 coefs_[idx] += self.layers_[idx].T.dot(deltas_[idx])
         self.coefs_ = coefs_
-        # print(coefs_[0])
-        # print(coefs_[1])
+        # logger.info(coefs_[0])
+        # logger.info(coefs_[1])
 
-    def _inti_coef(self, fan_in_, fan_out_):
+    def _init_coef(self, fan_in_, fan_out_):
         coef_ = 2 * np.random.random((fan_in_, fan_out_)) - 1
         return coef_
 
@@ -106,4 +113,10 @@ class MLP(object):
 
 
 if __name__ == '__main__':
-    pass
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+
+else:
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+

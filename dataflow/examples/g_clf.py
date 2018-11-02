@@ -13,10 +13,10 @@ import matplotlib.pyplot as plt
 划分下面几个部分:
 1. Net
 2. Dense Layer
-3. 激活
-4. 损失
-5. 优化
-6. 风险函数
+3. Activation
+4. Loss
+5. Optimizer
+6. Risk
 """
 
 """
@@ -49,10 +49,12 @@ class Dense(object):
         self.w = None
         self.order = None
         self.name = None
-        self._a = linear
         self.x = None
+
         w_shape = (fan_in, fan_out)
         self.w = 2 * np.random.random(w_shape) - 1
+        self._wx_b = None
+
         if activation is None:
             self._a = linear
         elif isinstance(activation, Activation):
@@ -60,13 +62,9 @@ class Dense(object):
         else:
             raise TypeError
 
-        self._wx_b = None
-        self.w = np.empty(w_shape, dtype=np.float32)
-
     def forward(self, x):
         self.x = x
-        output = np.dot(x, self.w)
-        self._wx_b = self._a(output)
+        self._wx_b = self.x.dot(self.w)
         return self._a(self._wx_b)
 
     def backward(self, dz):
@@ -110,8 +108,8 @@ class Sigmoid(Activation):
         return 1 / (np.exp(-x) + 1)
 
     def derivative(self, x):
-        x = self.forward(x)
-        return x * (1 - x)
+        y = self.forward(x)
+        return y * (1 - y)
 
 
 class Tanh(Activation):
@@ -119,7 +117,8 @@ class Tanh(Activation):
         return np.tanh(x)
 
     def derivative(self, x):
-        return 1. - np.square(np.tanh(x))
+        y = np.tanh(x)
+        return 1. - np.square(y)
 
 
 sigmoid = Sigmoid()

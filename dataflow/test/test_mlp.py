@@ -4,17 +4,19 @@
 # Author: 😏 <smirk dot cao at gmail dot com>
 import sys
 import os
+
 p = os.path.join(os.getcwd(), "../../")
 sys.path.append(p)
 
 from dataflow.examples.mlp import *
 import numpy as np
 import unittest
+import logging
 
 
-class Test_MLP(unittest.TestCase):
+class TestMLP(unittest.TestCase):
 
-    def test_mlp(self):
+    def test_xor(self):
         X = np.array([[0, 0, 1],
                       [0, 1, 1],
                       [1, 0, 1],
@@ -24,11 +26,18 @@ class Test_MLP(unittest.TestCase):
                       [1],
                       [1],
                       [0]])
-        mlpc = MLP(n_layers=7, hidden_layer_sizes=[10, 5, 4])
-        mlpc.fit(X, y)
-        print(mlpc.predict(X))
-        return mlpc
+        clf = MLP(n_layers=7, hidden_layer_sizes=[10, 5, 4])
+        clf.fit(X, y)
+        rst = clf.predict(X)
+        logger.info(rst)
+        np.testing.assert_allclose(rst, y, rtol=0, atol=1e-2)
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
     unittest.main()
+
+else:
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
