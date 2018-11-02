@@ -35,9 +35,6 @@ class TestCLF(unittest.TestCase):
             acc = accuracy(o > 0.5, y)
             logger.info("n_iter: %i | loss: %.5f | acc: %.2f" % (n_iter, loss, acc))
 
-        plt.scatter(x[:, 0], x[:, 1], c=(o > 0.5).ravel(), s=100, lw=0, cmap='RdYlGn')
-        plt.show()
-
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
