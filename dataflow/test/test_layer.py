@@ -21,15 +21,17 @@ class TestLayer(unittest.TestCase):
 
     def test_dense(self):
         x, y = dummy.load_dummy()
+        l1 = nn.layers.Dense(fan_in=x.shape[1], fan_out=10)
+        out_dataflow = l1.forward(x)
+        m = torch.nn.Linear(x.shape[1], 10)
+        out_torch = m(torch.tensor(x, dtype=torch.float32))
+        logger.info(out_torch.data.numpy().shape)
+        logger.info(out_dataflow.shape)
+        # torch.Linear和dataflow两个操作的w是不一样的
+        # np.testing.assert_array_almost_equal(out_dataflow, out_torch.data.numpy())
+        self.assertTupleEqual(out_torch.data.numpy().shape, out_dataflow.shape)
+        logger.info(l1)
 
-        # l1 = nn.layers.Dense(fan_in=x.shape[1], fan_out=10)
-        # out_dataflow = l1.forward(x)
-        # m = torch.nn.Linear(2, 10)
-        # out_torch = m(torch.tensor(x, dtype=torch.float32))
-        # logger.info(out_torch.shape)
-        # logger.info(out_dataflow.shape)
-        # # np.testing.assert_array_almost_equal(out_dataflow, out_torch.detach().numpy())
-        pass
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
