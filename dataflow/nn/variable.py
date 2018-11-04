@@ -14,3 +14,7 @@ class Variable(object):
     @property
     def error(self):
         return self._error
+
+    @property
+    def shape(self):
+        return self.data.shape
