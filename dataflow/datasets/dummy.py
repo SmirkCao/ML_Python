@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-#! -*- coding=utf-8 -*-
+# -*- coding=utf-8 -*-
 # Project:  ML_Python
 # Filename: dummy.py
 # Date: 11/2/18
