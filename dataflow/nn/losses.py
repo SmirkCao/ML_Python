@@ -38,7 +38,7 @@ class MSE(LossFunction):
     def apply(self, pred, target):
         self._pred = pred
         self._target = target
-        loss = np.mean(np.square(self._pred - self._target)) / 2
+        loss = np.mean(np.square(self._pred - self._target))
         return loss, self.delta
 
     def delta(self):

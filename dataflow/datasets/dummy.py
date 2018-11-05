@@ -21,7 +21,8 @@ def load_dummy():
 
 def load_xor():
     """
-    XOR problem
+    XOR 问题
+    这个问题纯拟合训练集
     :return:
     """
     x = np.array([[0, 0, 1],
@@ -37,3 +38,4 @@ def load_xor():
 # TODO: mnist
 # TODO: iris
 # TODO: 3rd curve
+# TODO: sklearn里面有makemoon, makecircle
