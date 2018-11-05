@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-#! -*- coding=utf-8 -*-
+# -*- coding=utf-8 -*-
 # Project:  ML_Python
 # Filename: dummy.py
 # Date: 11/2/18
@@ -17,3 +17,23 @@ def load_dummy():
     x = np.concatenate((x0, x1), axis=0)
     y = np.concatenate((y0, y1), axis=0)
     return x, y
+
+
+def load_xor():
+    """
+    XOR problem
+    :return:
+    """
+    x = np.array([[0, 0, 1],
+                  [0, 1, 1],
+                  [1, 0, 1],
+                  [1, 1, 1]])
+
+    y = np.array([[0],
+                  [1],
+                  [1],
+                  [0]])
+    return x, y
+# TODO: mnist
+# TODO: iris
+# TODO: 3rd curve

@@ -17,7 +17,7 @@ Keras经典网络搭建
   <img src="https://codecov.io/gh/SmirkCao/ML_Python/branch/dataflow/graph/badge.svg" />
 </a>
 </p>
-这个名字, 源于心中对LavVIEW的那份热爱与执着. 
+这个名字, 源于心中对LabVIEW的那份热爱与执着. 
 
 ## Gallery
 ### XOR

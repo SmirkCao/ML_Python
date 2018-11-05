@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-#! -*- coding=utf-8 -*-
+# -*- coding=utf-8 -*-
 # Project:  ML_Python
 # Filename: test_layer
 # Date: 10/30/18
@@ -11,20 +11,20 @@ import os
 import torch
 p = os.path.join(os.getcwd(), "../../")
 sys.path.append(p)
-
-import dataflow.nn as nn
-from dataflow.datasets import dummy
-import numpy as np
+import dataflow
+import dataflow.datasets.dummy as dummy
 
 
 class TestLayer(unittest.TestCase):
 
     def test_dense(self):
         x, y = dummy.load_dummy()
-        l1 = nn.layers.Dense(fan_in=x.shape[1], fan_out=10)
+        l1 = dataflow.Dense(fan_in=x.shape[1], fan_out=10)
         out_dataflow = l1.forward(x)
+
         m = torch.nn.Linear(x.shape[1], 10)
         out_torch = m(torch.tensor(x, dtype=torch.float32))
+
         logger.info(out_torch.data.numpy().shape)
         logger.info(out_dataflow.shape)
         # torch.Linear和dataflow两个操作的w是不一样的
