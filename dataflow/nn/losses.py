@@ -59,8 +59,6 @@ class CrossEntropy(LossFunction):
 
 
 class SigmoidCrossEntropy(CrossEntropy):
-    def __init__(self):
-        super().__init__()
 
     def apply(self, pred, target):
         p = self._pred = pred.data
