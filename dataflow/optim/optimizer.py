@@ -15,9 +15,13 @@ class Optimizer(object):
 
 
 class SGD(Optimizer):
-    # def __init__(self, params, lr):
-    #     super().__init__(params=params, lr=lr)
 
     def step(self):
+        # var is a np.ndarray, -= operation is by ref
         for var, grad in zip(self._vars, self._grads):
             var -= self._lr * grad
+
+
+class Momentum(Optimizer):
+    pass
+
