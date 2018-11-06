@@ -9,6 +9,9 @@ import numpy as np
 
 
 class Loss(object):
+    """
+    Loss base
+    """
     def __init__(self, loss=None, delta=None):
         self.data = loss
         self.delta = delta
@@ -18,6 +21,9 @@ class Loss(object):
 
 
 class LossFunction(object):
+    """
+    loss function base class
+    """
     def __init__(self):
         self._pred = None
         self._target = None
@@ -34,8 +40,25 @@ class LossFunction(object):
 
 
 class MSE(LossFunction):
+    r"""Creates a criterion that measures the mean squared error between
+    `n` elements in the predicted `x` and target `y`.
 
+    The loss can described as
+
+    .. math::
+        \ell(x, y) = L = \{l_1,\dots,l_N\}^\top, \quad
+        l_n = \left( x_n - y_n \right)^2,
+
+    where :math:`N` is the batch size.
+
+    """
     def apply(self, pred, target):
+        r"""
+
+        :param pred:
+        :param target:
+        :return:
+        """
         self._pred = pred
         self._target = target
         loss = np.mean(np.square(self._pred - self._target))
@@ -65,6 +88,21 @@ class SigmoidCrossEntropy(CrossEntropy):
         t = self._target = target
         loss = Loss()
         loss.data = -np.mean(t * np.log(p + self._eps) + (1 - t) * np.log(1 - p + self._eps))
+        loss.delta = self.delta
+        return loss
+
+    @property
+    def delta(self):
+        return self._pred - self._target
+
+
+class SoftmaxCrossEntropy(CrossEntropy):
+
+    def apply(self, pred, target):
+        p = self._pred = pred.data
+        t = self._target = target
+        loss = Loss()
+        loss.data = -np.mean(np.sum(t*np.log(p), axis=-1))
         loss.delta = self.delta
         return loss
 
