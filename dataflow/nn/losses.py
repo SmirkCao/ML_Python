@@ -61,7 +61,8 @@ class MSE(LossFunction):
         """
         self._pred = pred
         self._target = target
-        loss = np.mean(np.square(self._pred - self._target))
+        # 2 for gradient
+        loss = np.mean(np.square(self._pred - self._target))/2
         return loss, self.delta
 
     def delta(self):
