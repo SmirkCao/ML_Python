@@ -22,7 +22,7 @@ Keras经典网络搭建
 ## Gallery
 ### XOR
 ### General NN
-#### Classfier
+#### Classifier
 #### Regressor
 #### CNN
 
