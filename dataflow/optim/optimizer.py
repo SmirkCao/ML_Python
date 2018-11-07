@@ -80,6 +80,7 @@ class Momentum(Optimizer):
 class AdaGrad(Optimizer):
     r"""
     http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf
+    Ref to Deep Learning: CH08 Algo_8.4
 
     """
     def __init__(self, params, lr=0.001, delta=1e-7):
@@ -92,4 +93,23 @@ class AdaGrad(Optimizer):
         for var, grad, r in zip(self._vars, self._grads, self._rs):
             # like DVR
             r += grad*grad
-            var -= self._lr/(self._delta + np.sqrt(r + self._eps))*grad
+            var -= self._lr/(self._delta + np.sqrt(r))*grad
+
+
+class RMSProp(Optimizer):
+    r"""
+    http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
+    Ref to Deep Learning: CH08 Algo_8.5
+
+    """
+    def __init__(self, params, lr=0.001, delta=1e-6, rho=0.99):
+        super().__init__(params=params, lr=lr)
+        self._name = "RMSProp"
+        self._delta = delta
+        self._rho = rho
+        self._rs = None
+
+    def step(self):
+        for var, grad, r in zip(self._vars, self._grads, self._rs):
+            r[:] = self._rho * r + (1 - self._rho) * np.square(grad)
+            var -= self._lr/(np.sqrt(r + self._delta))*grad

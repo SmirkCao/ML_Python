@@ -135,6 +135,34 @@ class TestOptimizer(unittest.TestCase):
 
             save_fig(opt_x, opt_y, points_x, points_y, **opt.info)
 
+    def test_rmsprop(self):
+        """
+        test RMSProp optimizer
+        :return:
+        """
+        points_x = np.linspace(-20, 20, 1000)
+        points_y = f(points_x)
+
+        max_iter = 1000
+        for i in range(10):
+            lr = pow(2, -i) * 16
+            x = [np.array([-20.0])]
+            derivative = [np.array([df(-20)])]
+
+            opt_x, opt_y = [], []
+            opt = RMSProp(params={}, lr=lr)
+            opt._vars = x
+            opt._grads = derivative
+            opt._rs = [np.zeros_like(v) for v in opt._vars]
+
+            for _ in range(max_iter):
+                opt_x.append(x[0][0]), opt_y.append(f(x[0][0]))
+                opt.step()
+                for var, grad in zip(opt._vars, opt._grads):
+                    grad[:] = df(var)
+
+            save_fig(opt_x, opt_y, points_x, points_y, **opt.info)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
