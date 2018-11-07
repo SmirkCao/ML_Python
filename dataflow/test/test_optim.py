@@ -10,6 +10,8 @@ sys.path.append(p)
 
 from dataflow.optim.optimizer import *
 
+DEBUG = True
+
 
 def f(x):
     # according to: https://zhuanlan.zhihu.com/p/41799394
@@ -53,6 +55,7 @@ def save_fig(x, y, raw_x, raw_y, lr=None, name=None):
 
 class TestOptimizer(unittest.TestCase):
 
+    @unittest.skipIf(DEBUG, "skipped: Debug")
     def test_sgd(self):
         """
         test gradient decent
@@ -79,6 +82,7 @@ class TestOptimizer(unittest.TestCase):
 
             save_fig(opt_x, opt_y, points_x, points_y, **opt.info)
 
+    @unittest.skipIf(DEBUG, "skipped: Debug")
     def test_momentum(self):
         """
         test momentum optimizer
@@ -107,6 +111,7 @@ class TestOptimizer(unittest.TestCase):
 
             save_fig(opt_x, opt_y, points_x, points_y, **opt.info)
 
+    @unittest.skipIf(DEBUG, "skipped: Debug")
     def test_adagrad(self):
         """
         test AdaGrad optimizer
@@ -135,6 +140,7 @@ class TestOptimizer(unittest.TestCase):
 
             save_fig(opt_x, opt_y, points_x, points_y, **opt.info)
 
+    @unittest.skipIf(DEBUG, "skipped: Debug")
     def test_rmsprop(self):
         """
         test RMSProp optimizer
@@ -154,6 +160,35 @@ class TestOptimizer(unittest.TestCase):
             opt._vars = x
             opt._grads = derivative
             opt._rs = [np.zeros_like(v) for v in opt._vars]
+
+            for _ in range(max_iter):
+                opt_x.append(x[0][0]), opt_y.append(f(x[0][0]))
+                opt.step()
+                for var, grad in zip(opt._vars, opt._grads):
+                    grad[:] = df(var)
+
+            save_fig(opt_x, opt_y, points_x, points_y, **opt.info)
+
+    def test_adam(self):
+        """
+        test adam optimizer
+        :return:
+        """
+        points_x = np.linspace(-20, 20, 1000)
+        points_y = f(points_x)
+
+        max_iter = 1000
+        for i in range(10):
+            lr = pow(2, -i) * 16
+            x = [np.array([-20.0])]
+            derivative = [np.array([df(-20)])]
+
+            opt_x, opt_y = [], []
+            opt = Adam(params={}, lr=lr, rho1=0.9, rho2=0.9)
+            opt._vars = x
+            opt._grads = derivative
+            opt._rs = [np.zeros_like(v) for v in opt._vars]
+            opt._ss = [np.zeros_like(v) for v in opt._vars]
 
             for _ in range(max_iter):
                 opt_x.append(x[0][0]), opt_y.append(f(x[0][0]))

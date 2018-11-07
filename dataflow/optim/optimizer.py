@@ -98,8 +98,11 @@ class AdaGrad(Optimizer):
 
 class RMSProp(Optimizer):
     r"""
-    http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
+    RMSProp [Hilton]_
+
     Ref to Deep Learning: CH08 Algo_8.5
+
+    .. [Hilton] http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
 
     """
     def __init__(self, params, lr=0.001, delta=1e-6, rho=0.99):
@@ -113,3 +116,29 @@ class RMSProp(Optimizer):
         for var, grad, r in zip(self._vars, self._grads, self._rs):
             r[:] = self._rho * r + (1 - self._rho) * np.square(grad)
             var -= self._lr/(np.sqrt(r + self._delta))*grad
+
+
+class Adam(Optimizer):
+    r"""
+
+    """
+    def __init__(self, params, lr=0.001, rho1=0.9, rho2=0.999, delta=1e-8):
+        super().__init__(params=params, lr=lr)
+        self._name = "Adam"
+        self._delta = delta
+        self._rho1 = rho1
+        self._rho2 = rho2
+        self._ss = None
+        self._rs = None
+        self._rho1_ = 1
+        self._rho2_ = 1
+
+    def step(self):
+        for var, grad, r, s in zip(self._vars, self._grads, self._rs, self._ss):
+            s[:] = self._rho1 * s + (1 - self._rho1)*grad
+            r[:] = self._rho2 * r + (1 - self._rho2) * np.square(grad)
+            self._rho1_ = self._rho1_ * self._rho1
+            self._rho2_ = self._rho2_ * self._rho2
+            s_ = s/(1 - self._rho1_)
+            r_ = r/(1 - self._rho2_)
+            var -= self._lr*s_/(np.sqrt(r_) + self._delta)
