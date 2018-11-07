@@ -93,3 +93,17 @@ class Dense(ParamLayer):
 
     def __repr__(self):
         return "Dense: fan_in {} fan_out {}".format(self.fan_in, self.fan_out)
+
+
+class Conv2D(ParamLayer):
+    def forward(self, x):
+        pass
+
+    def backward(self):
+        pass
+
+    __call__ = forward
+
+    def __repr__(self):
+        raise NotImplementedError
+
