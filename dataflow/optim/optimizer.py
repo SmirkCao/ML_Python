@@ -8,6 +8,7 @@ class Optimizer(object):
         self._vars = []
         self._grads = []
         self._name = None
+        self._eps = 1e-7
 
         for layer_p in self._params.values():
             for p_name in layer_p["vars"].keys():
@@ -75,3 +76,20 @@ class Momentum(Optimizer):
             mv[:] = self.momentum*mv + self._lr*grad
             var -= mv
 
+
+class AdaGrad(Optimizer):
+    r"""
+    http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf
+
+    """
+    def __init__(self, params, lr=0.001, delta=1e-7):
+        super().__init__(params=params, lr=lr)
+        self._name = "AdaGrad"
+        self._delta = delta
+        self._rs = None
+
+    def step(self):
+        for var, grad, r in zip(self._vars, self._grads, self._rs):
+            # like DVR
+            r += grad*grad
+            var -= self._lr/(self._delta + np.sqrt(r + self._eps))*grad
