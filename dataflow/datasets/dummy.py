@@ -35,6 +35,28 @@ def load_xor():
                   [1],
                   [0]])
     return x, y
+
+
+def load_xor3d():
+    """
+    3D XOR data
+    X = [x1,x2,x3]
+    Y = x1 xor x2 xor x3
+
+    ref to https://www.zhihu.com/question/301385613/answer/526433461
+    :return: x, y
+    """
+    data = np.array([[0, 0, 0, 0],
+                     [0, 0, 1, 1],
+                     [0, 1, 0, 1],
+                     [0, 1, 1, 0],
+                     [1, 0, 0, 1],
+                     [1, 0, 1, 0],
+                     [1, 1, 0, 0],
+                     [1, 1, 1, 1]])
+    x = data[:, :-1]
+    y = data[:, -1]
+    return x, y
 # TODO: mnist
 # TODO: iris
 # TODO: 3rd curve
