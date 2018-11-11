@@ -38,7 +38,9 @@ def get_padded_and_tmp_out(img, kernel_size, strides, fan_out, padding):
     """
     # out nhwc
     n, h, w = img.shape[:3]  # channel last
+    # print("img shape", img.shape)
     fh, fw, sh, sw = kernel_size + strides
+    # print("fh %d, fw %d, sh %d, sw %d" % (fh, fw, sh, sw))
 
     if padding == "same":
         out_h, out_w = int(np.ceil(h / sh)), int(np.ceil(w / sw))
@@ -47,7 +49,7 @@ def get_padded_and_tmp_out(img, kernel_size, strides, fan_out, padding):
         pt, pl = int(np.floor(ph / 2)), int(np.floor(pw / 2))
         pb, pr = ph - pt, pw - pl
     elif padding == "valid":
-        out_h, out_w = int(np.ceil((h - fh + 1) / sh)), int(np.ceil(w - fw + 1 / sw))
+        out_h, out_w = int(np.ceil((h - fh + 1) / sh)), int(np.ceil((w - fw + 1 )/ sw))
         pt, pb, pl, pr = 0, 0, 0, 0
     elif padding == "full":
         # 补了足够多的0, 保证每个点都被卷积到
@@ -57,5 +59,7 @@ def get_padded_and_tmp_out(img, kernel_size, strides, fan_out, padding):
         raise TypeError
     # np.pad 常用预处理, 数组填充
     padded_img = np.pad(img, ((0, 0), (pt, pb), (pl, pr), (0, 0)), 'constant', constant_values=0.).astype(np.float32)
-    tmp_conved = np.zeros_like((n, out_h, out_w, fan_out), dtype=np.float32)
+    # print("padding: %s, out_h %d, out_w %d" % (padding, out_h, out_w))
+    # zeros, zeros_like
+    tmp_conved = np.zeros((n, out_h, out_w, fan_out), dtype=np.float32)
     return padded_img, tmp_conved, (pt, pb, pl, pr)

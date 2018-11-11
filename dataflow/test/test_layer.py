@@ -32,6 +32,10 @@ class TestLayer(unittest.TestCase):
         self.assertTupleEqual(out_torch.data.numpy().shape, out_dataflow.shape)
         logger.info(l1)
 
+    def test_conv2d(self):
+        # x, y = dummy.load_dummy()
+        dataflow.Conv2D(fan_in=100, fan_out=200)
+        
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

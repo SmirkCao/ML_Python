@@ -1,5 +1,6 @@
 """
-BaseLayer->ParamLayer->[Dense, ]
+BaseLayer
+->ParamLayer->[Dense, Conv2D]
 ->[Pooling,]
 """
 import numpy as np
@@ -111,6 +112,23 @@ class Conv2D(ParamLayer):
                  # dilation=1,
                  # groups=1,
                  bias=True):
+        """
+        ref to: https://github.com/MorvanZhou/simple-neural-networks
+
+        why fan_in and fan_out?
+        fan_in and fan_out are I got when I was a student.
+        I don't know the exact relation of they and channel_in & channel_out.
+        But I believe that they have some link.
+        So, keep the notation here for someday I can figure out the relationship.
+
+        :param fan_in: input channels
+        :param fan_out:
+        :param kernel_size:
+        :param strides:
+        :param padding:
+        :param activation:
+        :param bias:
+        """
         self.kernel_size = _pair(kernel_size)
         self.strides = _pair(strides)
         super().__init__(w_shape=(fan_in,) + self.kernel_size + (fan_out,),)
@@ -127,8 +145,13 @@ class Conv2D(ParamLayer):
     def forward(self, x):
 
         self._x = self._process_input(x)
-        # [batch, channel, high, width]
-        self._padded, tmp_conved, self._p_tblr = get_padded_and_tmp_out(self._x, self.kernel_size, self.strides, self.fan_out, "same")
+        # padded: [batch, channel, high, width]
+        self._padded, tmp_conved, self._p_tblr = get_padded_and_tmp_out(self._x,
+                                                                        self.kernel_size,
+                                                                        self.strides,
+                                                                        self.fan_out,
+                                                                        "same")
+        # print(tmp_conved.shape)
         self._wx_b = self.convolution(self._padded, self.w, tmp_conved)
         self._activated = self._a(self._wx_b)
         out = self._wrap_out(self._activated)
@@ -209,12 +232,13 @@ class Conv2D(ParamLayer):
         t_flt = flt.transpose((1, 2, 0, 3))  # [c,h,w,out] => [h,w,c,out]
         # strides.shape[0], strides.shape[1], kernel.shape[0], kernel.shape[1]
         s0, s1, k0, k1 = self.strides + tuple(flt.shape[1:3])
-
+        # print("s0, s1, k0, k1", s0, s1, k0, k1)
         # conved: feature map
         for i in range(0, conved.shape[1]):  # in each row of the convoluted feature map
             for j in range(0, conved.shape[2]):  # in each column of the convoluted feature map
                 # [n,h,w,c] => [n, h*w*c]
                 # 每个样本一行, 做了拉伸
+                # print("x shape", x[:, i*s0:i*s0+k0, j*s1:j*s1+k1, :].shape)
                 x_seg_matrix = x[:, i*s0:i*s0+k0, j*s1:j*s1+k1, :].reshape((batch_size, -1))
                 # [h,w,c, out] => [h*w*c, out]
                 # flter做拉伸
@@ -253,16 +277,18 @@ class MaxPoll2D(BaseLayer):
         self._padded, out, self._p_tblr = get_padded_and_tmp_out(self._x,
                                                                  self.kernel_size,
                                                                  self.strides,
-                                                                 self._x.shepa[-1],
+                                                                 self._x.shape[-1],
                                                                  self.padding)
         s0, s1, k0, k1 = self.strides + self.kernel_size
+        # print("s0: %d, s1: %d, k0: %d, k1: %d, out shape: %s" % (s0, s1, k0, k1, str(out.shape)))
         # out is shaped [n, h, w, c]
         for i in range(out.shape[1]):
             for j in range(out.shape[2]):
                 window = self._padded[:, i*s0:i*s0+k0, j*s1:j*s1+k1, :]  # [n, h, w, c]
+                # print(i, j, "window shape", window.shape)
                 out[:, i, j, :] = window.max(axis=(1, 2))
-        out = None
-        wrapped_out = self._wrap_out(out.transpose((0, 3, 1, 2)))
+        # nhwc-> nchw .transpose((0, 3, 1, 2))
+        wrapped_out = self._wrap_out(out)
         return wrapped_out
 
     def backward(self):
@@ -281,13 +307,15 @@ class MaxPoll2D(BaseLayer):
         self.data_vars["in"].set_error(padded_dx[:, t:b, l:r, :])  #
         return grad
 
+    __call__ = forward
+
 
 class Flatten(BaseLayer):
 
     def forward(self, x):
         self._x = self._process_input(x)
         # 每个样本一行
-        out = self._x.reshape((self._x.shap[0], -1))
+        out = self._x.reshape((self._x.shape[0], -1))
         wrapped_out = self._wrap_out(out)
         return wrapped_out
 
@@ -296,3 +324,5 @@ class Flatten(BaseLayer):
         grad = None
         self.data_vars["in"].set_error(dz.reshape(self._x.shape))
         return grad
+
+    __call__ =  forward
