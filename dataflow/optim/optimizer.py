@@ -25,8 +25,13 @@ class Optimizer(object):
 
 class SGD(Optimizer):
     def __init__(self, params, lr=0.01):
+        """
+        batch越大, 越接近GD; 随机来自batch
+        :param params:
+        :param lr:
+        """
         super().__init__(params, lr)
-        self._name = "Gradient Decent"
+        self._name = "Stochastic Gradient Decent"
 
     def step(self):
         # var is a np.ndarray, -= operation is by ref
@@ -128,8 +133,8 @@ class Adam(Optimizer):
         self._delta = delta
         self._rho1 = rho1
         self._rho2 = rho2
-        self._ss = None
-        self._rs = None
+        self._rs = [np.zeros_like(v) for v in self._vars]
+        self._ss = [np.zeros_like(v) for v in self._vars]
         self._rho1_ = 1
         self._rho2_ = 1
 
