@@ -10,4 +10,4 @@ script:
   - cd dataflow
   - make tests  
 after_success:
-  - codecov
+  - codecov -F
