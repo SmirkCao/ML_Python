@@ -7,6 +7,7 @@ import numpy as np
 import dataflow
 from dataflow.nn.variable import Variable
 from .utils import _single, _pair, _triple, get_padded_and_tmp_out
+from .initializer import *
 
 
 class BaseLayer(object):
@@ -132,6 +133,7 @@ class Conv2D(ParamLayer):
         self.kernel_size = _pair(kernel_size)
         self.strides = _pair(strides)
         super().__init__(w_shape=(fan_in,) + self.kernel_size + (fan_out,),)
+        TruncatedNormal(0., 0.01).initialize(self.w)
         self._a = activation if activation else dataflow.act.tanh
 
         self.fan_in = fan_in

@@ -24,27 +24,42 @@ class TestCNN(unittest.TestCase):
         logger.info("start to load data")
         x, y = load_mnist()
         logger.info("data loaded")
-        train_x, train_y = x[:100], y[:100]
+        # 1. Input Data
+        train_x, train_y = x[:1000], y[:1000]
+        test_x, test_y = x[1000:1200], y[1000:1200]
+
         img_h = 28
         img_w = 28
         channel = 1
         # n, h, w, c
         train_x = train_x.reshape((-1, img_h, img_w, channel))
+        test_x = test_x.reshape((-1, img_h, img_w, channel))
+        # 2. Epoch
         max_iter = 100
+        # 3. Net
         clf = CNN()
         opt = Adam(params=clf.params)
-        loss_fn = SoftmaxCrossEntropy()
-
+        # 4. Loss
+        loss_fn = SparseSoftMaxCrossEntropyWithLogits()
+        # 5. Iteration
         for n_iter in range(max_iter):
-            # train
+            # 5.1 Forward
             pred = clf.forward(x=train_x)
+            # 5.2 Loss Calculation
             loss = loss_fn(pred, train_y)
+            # 5.3 Backward
             clf.backward(loss)
+            # 5.4 Optimization
             opt.step()
             logger.info("n_iter :%d, loss: %f "% (n_iter, loss.data))
+            # 5.5 Performance Watching
+            # acc =
+            # logger.info("performance")
         # test
-        pred = clf.forward(train_x)
-        logger.info("result: %s" % str(zip(pred, train_y)))
+        # need argmax
+        pred = clf.forward(test_x)
+        logger.info("result: %s %s" % (str(np.argmax(pred.data, axis=-1)), str(test_y.ravel())))
+        logger.info(np.sum(np.argmax(pred.data, axis=-1) == test_y.ravel()))
             # acc =
 
 

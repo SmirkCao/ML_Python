@@ -6,6 +6,7 @@
 # Author: 😏 <smirk dot cao at gmail dot com>
 import logging
 import numpy as np
+from .activations import *
 
 
 class Loss(object):
@@ -110,6 +111,25 @@ class SoftmaxCrossEntropy(CrossEntropy):
     @property
     def delta(self):
         return self._pred - self._target
+
+
+class SparseSoftMaxCrossEntropyWithLogits(CrossEntropy):
+    def __init__(self):
+        super().__init__()
+
+    def apply(self, pred, target):
+        p = self._pred = pred.data
+        t = self._target = target
+        sm = softmax(self._pred)
+        log_likelihood = np.log(sm[np.arange(sm.shape[0]), target.ravel()] + self._eps)
+        loss = - np.mean(log_likelihood)
+        return Loss(loss, self.delta)
+
+    @property
+    def delta(self):
+        grad = softmax(self._pred)
+        grad[np.arange(grad.shape[0]), self._target.ravel()] -= 1.
+        return grad / len(grad)
 
 
 if __name__ == '__main__':
