@@ -8,8 +8,6 @@ import logging
 import unittest
 import sys
 import os
-import torch
-
 p = os.path.join(os.getcwd(), "../../")
 sys.path.append(p)
 
@@ -66,12 +64,10 @@ class TestCNN(unittest.TestCase):
                 pred = clf.forward(val_x)
                 logger.info("n_iter :%d, loss: %1.3f  Accuracy: %1.3f " %
                             (n_iter, loss.data, np.sum(np.argmax(pred.data, axis=-1) == val_y.ravel()) / 20))
-            # acc =
-            # logger.info("performance")
         # test
         # need argmax
         pred = clf.forward(test_x)
-        logger.info("result: %s %s" % (str(np.argmax(pred.data, axis=-1)), str(test_y.ravel())))
+        logger.info("Result: %s %s" % (str(np.argmax(pred.data, axis=-1)), str(test_y.ravel())))
         logger.info("Accuracy: %1.3f " % (np.sum(np.argmax(pred.data, axis=-1) == test_y.ravel()) / 20))
 
 

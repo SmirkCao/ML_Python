@@ -14,8 +14,8 @@ class CNN(Module):
     def __init__(self):
         super().__init__()
         # Conv2D: fan_in, fan_out, kernel_size, strides
-        self.l1 = Conv2D(1, 6, (5, 5), (1, 1), "same")
-        self.l2 = MaxPoll2D((2, 2), (2, 2))
+        self.l1 = Conv2D(1, 6, 5, 1, "same")
+        self.l2 = MaxPoll2D(2, 2)
         self.l3 = Conv2D(6, 16, (5, 5), (1, 1), "same")
         self.l4 = MaxPoll2D((2, 2), (2, 2))
         self.l5 = Flatten()

@@ -9,6 +9,9 @@ p = os.path.join(os.getcwd(), "../../")
 sys.path.append(p)
 
 from dataflow.optim.optimizer import *
+import imageio
+import glob
+
 
 DEBUG = True
 
@@ -197,6 +200,15 @@ class TestOptimizer(unittest.TestCase):
                     grad[:] = df(var)
 
             save_fig(opt_x, opt_y, points_x, points_y, **opt.info)
+
+    def test_output_gif(self):
+        fnames = ["Stochastic Gradient Decent", "Momentum GD", "AdaGrad", "RMSProp", "Adam"]
+        for f in fnames:
+            ofname = f + ".gif"
+            filenames = sorted(glob.glob(f + "*.png"), key=os.path.getmtime, reverse=True)
+            filenames = [os.getcwd() + "/" + fname for fname in filenames]
+            frames = [imageio.imread(img_name) for img_name in filenames]
+            imageio.mimsave(ofname, frames, 'GIF', duration=1)
 
 
 if __name__ == '__main__':
