@@ -207,8 +207,9 @@ class TestOptimizer(unittest.TestCase):
             ofname = f + ".gif"
             filenames = sorted(glob.glob(f + "*.png"), key=os.path.getmtime, reverse=True)
             filenames = [os.getcwd() + "/" + fname for fname in filenames]
-            frames = [imageio.imread(img_name) for img_name in filenames]
-            imageio.mimsave(ofname, frames, 'GIF', duration=1)
+            if len(filenames) > 0:
+                frames = [imageio.imread(img_name) for img_name in filenames]
+                imageio.mimsave(ofname, frames, 'GIF', duration=1)
 
 
 if __name__ == '__main__':
