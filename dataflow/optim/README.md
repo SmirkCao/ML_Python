@@ -1,9 +1,9 @@
 - SGD
-  ![](assets/Stochastic Gradient Decent.gif)
+  ![](assets/Stochastic_Gradient_Decent.gif)
 - RMSProp
   ![](assets/RMSProp.gif)
 - Momentum GD
-  ![Momentum GD](assets/Momentum GD.gif)
+  ![Momentum GD](assets/Momentum_GD.gif)
 - AdaGrad
   ![AdaGrad](assets/AdaGrad.gif)
 - Adam
