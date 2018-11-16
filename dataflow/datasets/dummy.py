@@ -23,6 +23,22 @@ def load_dummy():
     return x, y
 
 
+def load_line():
+    np.random.seed(2016)
+    x = np.arange(100)
+    y = x*0.3 + 0.6
+    y += np.random.normal(-2, 1, 100)
+    return x, y
+
+
+def load_curve1():
+    np.random.seed(2016)
+    x = np.linspace(-5, 6, 300)[:, np.newaxis]
+    noise = np.random.normal(0, 0.2, x.shape)
+    y = np.sin(x) + 3 * np.tanh(x) - 0.5 + noise
+    return x, y
+
+
 def load_xor():
     """
     XOR 问题
