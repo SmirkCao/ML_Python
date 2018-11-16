@@ -19,6 +19,9 @@ import matplotlib.pyplot as plt
 def dense(inputs, in_size, out_size, activation_function=None):
     w = tf.Variable(tf.random_normal([in_size, out_size]))
     b = tf.Variable(tf.zeros([1, out_size]) + 0.1)
+
+    tf.summary.histogram("weights", w)
+    tf.summary.histogram("bias", b)
     wx_b = tf.matmul(inputs, w) + b
     if activation_function is None:
         outputs = wx_b
@@ -32,23 +35,27 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
 
     x_data, y_data = load_curve1()
-    xs = tf.placeholder(tf.float32, [None, 1])
-    ys = tf.placeholder(tf.float32, [None, 1])
+    with tf.name_scope('inputs'):
+        xs = tf.placeholder(tf.float32, [None, 1], name="x_in")
+        ys = tf.placeholder(tf.float32, [None, 1], name="y_in")
 
-    l1 = dense(xs, 1, 50, activation_function=tf.nn.sigmoid)
-    # DL P_123
-    # 一个前馈神经网络如果具有线性输出层和至少一层具有任何一种"挤压"性质的激活函数的隐藏层, 只要给予网络足够数量的隐藏单元, 它可以任意精度
-    # 近似任何从一个有限维空间到另一个有限维空间的Borel可测函数.
-    # 通过增加网络容量可以提升拟合结果.
-    # 1. 增加宽度(每层神经元数量)
-    # 2. 增加深度(网络层数)
-    # 考虑激活函数的形状, 对拟合会有好处, curve数据集不适合用relu
-    # l2 = dense(l1, 10, 100, activation_function=tf.nn.sigmoid)
-    # l3 = dense(l2, 100, 50, activation_function=tf.nn.sigmoid)
-
-    prediction = dense(l1, 50, 1, activation_function=None)
-
-    loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction), reduction_indices=[1]))
+    with tf.name_scope("module"):
+        with tf.name_scope("layer1_dense"):
+            l1 = dense(xs, 1, 50, activation_function=tf.nn.sigmoid)
+        # DL P_123
+        # 一个前馈神经网络如果具有线性输出层和至少一层具有任何一种"挤压"性质的激活函数的隐藏层, 只要给予网络足够数量的隐藏单元, 它可以任意精度
+        # 近似任何从一个有限维空间到另一个有限维空间的Borel可测函数.
+        # 通过增加网络容量可以提升拟合结果.
+        # 1. 增加宽度(每层神经元数量)
+        # 2. 增加深度(网络层数)
+        # 考虑激活函数的形状, 对拟合会有好处, curve数据集不适合用relu
+        # l2 = dense(l1, 10, 100, activation_function=tf.nn.sigmoid)
+        # l3 = dense(l2, 100, 50, activation_function=tf.nn.sigmoid)
+        with tf.name_scope("layer2_dense"):
+            prediction = dense(l1, 50, 1, activation_function=None)
+    with tf.name_scope("loss"):
+        loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction), reduction_indices=[1]))
+        tf.summary.scalar('loss', loss)
     train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)
     init = tf.global_variables_initializer()
 
@@ -59,6 +66,8 @@ if __name__ == '__main__':
     plt.show()
 
     with tf.Session() as sess:
+        merged = tf.summary.merge_all()  # tensorflow >= 0.12
+        writer = tf.summary.FileWriter("logs/", sess.graph)
         sess.run(init)
         for idx in range(2000):
             sess.run(train_step, feed_dict={xs: x_data, ys: y_data})
@@ -72,6 +81,8 @@ if __name__ == '__main__':
                 logger.info(sess.run(loss, feed_dict={xs: x_data, ys: y_data}))
                 pred = sess.run(prediction, feed_dict={xs: x_data})
                 lines = ax.plot(x_data, pred, "-r", alpha=0.2)
+                rs = sess.run(merged, feed_dict={xs: x_data, ys: y_data})
+                writer.add_summary(rs, idx)
                 plt.pause(0.1)
 
     plt.waitforbuttonpress()
