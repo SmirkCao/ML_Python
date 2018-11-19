@@ -100,6 +100,15 @@ def load_mnist():
         print("start to download train-labels-idx1-ubyte.gz")
         urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz',
                                    'train-labels-idx1-ubyte.gz', callback)
+
+    if not os.path.exists("t10k-images-idx3-ubyte.gz"):
+        print("start to download t10k-images-idx3-ubyte.gz")
+        urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz',
+                                   't10k-images-idx3-ubyte.gz', callback)
+    if not os.path.exists("t10k-labels-idx1-ubyte.gz"):
+        print("start to download t10k-labels-idx1-ubyte.gz")
+        urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz',
+                                   't10k-labels-idx1-ubyte.gz', callback)
     # load train data
     f = open("train-images-idx3-ubyte.gz", "rb")
     raw_data = gzip.GzipFile(mode="rb", fileobj=f).read()
@@ -127,8 +136,36 @@ def load_mnist():
     y_train = np.array(struct.unpack_from(fmt_header, raw_data, offset))
     y_train = y_train.reshape(num_images, -1)
     print(y_train.shape)
-    # print(y_train[:10])
-    return x_train, y_train
+
+    # load test data
+    f = open("t10k-images-idx3-ubyte.gz", "rb")
+    raw_data = gzip.GzipFile(mode="rb", fileobj=f).read()
+    f.close()
+    offset = 0
+    fmt_header = '>iiii'
+    magic_number, num_images, num_rows, num_cols = struct.unpack_from(fmt_header, raw_data, offset)
+    offset += struct.calcsize(fmt_header)
+    datasize = num_images*num_rows*num_cols
+    fmt_header = ">" + str(datasize)+"B"
+    x_test = np.array(struct.unpack_from(fmt_header, raw_data, offset))
+    x_test = x_test.reshape(num_images, -1)
+    print(x_test.shape)
+
+    # load test label
+    f = open("t10k-labels-idx1-ubyte.gz", "rb")
+    raw_data = gzip.GzipFile(mode="rb", fileobj=f).read()
+    f.close()
+    offset = 0
+    fmt_header = '>ii'
+    magic_number, num_labels = struct.unpack_from(fmt_header, raw_data, offset)
+    offset += struct.calcsize(fmt_header)
+    datasize = num_labels
+    fmt_header = ">" + str(datasize)+"B"
+    y_test = np.array(struct.unpack_from(fmt_header, raw_data, offset))
+    y_test = y_test.reshape(num_images, -1)
+    print(y_test.shape)
+    # print(y_test[:10])
+    return x_train, y_train, x_test, y_test
 
 # TODO: iris
 # TODO: 3rd curve

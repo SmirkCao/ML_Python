@@ -23,7 +23,7 @@ class TestCNN(unittest.TestCase):
 
     def test_cnn(self):
         logger.info("start to load data")
-        x, y = load_mnist()
+        x, y, _, _ = load_mnist()
         logger.info("data loaded")
         # 1. Input Data
         if PUSH:

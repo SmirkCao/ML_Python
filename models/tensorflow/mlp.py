@@ -9,9 +9,9 @@ import os
 
 p = os.path.join(os.getcwd(), "../../")
 sys.path.append(p)
+from dataflow.datasets.dummy import load_mnist
 import logging
 import tensorflow as tf
-from dataflow.datasets.dummy import load_mnist
 import numpy as np
 
 
@@ -47,24 +47,30 @@ def data_generator(x, y, batch_size=100):
     """
     global p
     global p_
+    global x_
+    global y_
+    x_, y_ = x, y
     while True:
         if p + batch_size > len(x):
             p_ = p
             p = (p + batch_size) % len(x)
+            indexes = np.random.permutation(len(x))
+            x_[:], y_[:] = x_[indexes], y_[indexes]
             indexes = np.append(np.arange(len(x))[p_:],
                                 np.arange(len(x))[:p])
         else:
             p_ = p
             p += batch_size
             indexes = np.arange(len(x))[p:p + batch_size]
-        yield x[indexes], y[indexes]
+        yield x_[indexes], y_[indexes]
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger(__name__)
 
-    x_data, y_data = load_mnist()
+    x_train, y_train, x_test, y_test = load_mnist()
+    x_, y_ = x_train, y_train
 
     # one_hot encoding the label
     # 1. by tf.one_hot: need to call eval in session.
@@ -73,7 +79,8 @@ if __name__ == '__main__':
     # y_data = tf.one_hot(y_data.reshape(-1), 10, on_value=1.0, off_value=0.0, axis=-1)
 
     # 2. by numpy.eye
-    y_data = np.eye(10)[y_data.reshape(-1)]
+    y_train = np.eye(10)[y_train.reshape(-1)]
+    y_test = np.eye(10)[y_test.reshape(-1)]
 
     # inputs
     with tf.name_scope("inputs"):
@@ -94,11 +101,15 @@ if __name__ == '__main__':
             -tf.reduce_sum(ys * tf.log(tf.clip_by_value(pred, 1e-10, 1.0)), reduction_indices=[1]))
 
     # optimizer
-    train_step = tf.train.GradientDescentOptimizer(0.05).minimize(cross_entropy)
+    train_step = tf.train.GradientDescentOptimizer(0.005).minimize(cross_entropy)
+
+    # accuracy
+    correction_prediction = tf.equal(tf.argmax(pred, axis=1), tf.argmax(ys, axis=1))
+    accuracy = tf.reduce_mean(tf.cast(correction_prediction, tf.float32))
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        data_gen = data_generator(x_data, y_data, batch_size=100)
+        data_gen = data_generator(x_train, y_train, batch_size=256)
         p = 0
         p_ = 0
         for idx in range(10000):
@@ -107,10 +118,12 @@ if __name__ == '__main__':
             # print(batch_ys.shape, batch_xs.shape, type(batch_xs[0, 0]))
             # logger.info(sess.run(pred, feed_dict={xs: batch_xs, ys: batch_ys}))
             sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys})
-            if idx % 50 == 0:
+            if idx % 100 == 0:
                 # print(batch_xs, batch_ys)
                 # 感觉这里用不到xs, 但是也要传.
-                logger.info(sess.run(cross_entropy, feed_dict={xs: batch_xs, ys: batch_ys}))
+                # logger.info(sess.run(cross_entropy, feed_dict={xs: batch_xs, ys: batch_ys}))
+                logger.info(sess.run(accuracy, feed_dict={xs: batch_xs, ys: batch_ys}))
+                logger.info(sess.run(accuracy, feed_dict={xs: x_test, ys: y_test}))
 
 else:
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
