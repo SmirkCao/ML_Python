@@ -46,6 +46,13 @@ if __name__ == '__main__':
     logger.info(net)
     opt = torch.optim.SGD(net.parameters(), lr=0.1)
     loss_fn = torch.nn.MSELoss()
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.scatter(x.data.numpy(), y.data.numpy())
+    plt.ion()
+    plt.show()
+
     for n_iter in range(1000):
         pred = net(x)
         loss = loss_fn(pred, y)
@@ -55,11 +62,15 @@ if __name__ == '__main__':
         opt.step()
         if n_iter % 10 == 0:
             logger.info(loss.data.numpy())
-            plt.cla()
-            plt.scatter(x.data.numpy(), y.data.numpy())
-            plt.plot(x.data.numpy(), pred.data.numpy(), 'r-', lw=5)
-            plt.text(0.5, 0, 'Loss=%.4f' % loss.data.numpy(), fontdict={'size': 20, 'color': 'red'})
+            try:
+                ax.texts.remove(text_loss)
+            except NameError:
+                pass
+
+            ax.plot(x.data.numpy(), pred.data.numpy(), "-r", alpha=0.2)
+            text_loss = plt.text(0.5, 0, 'Loss=%.4f' % loss.data.numpy(), fontdict={'size': 20, 'color': 'red'})
             plt.pause(0.1)
+    # plt.waitforbuttonpress()
 
 else:
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
