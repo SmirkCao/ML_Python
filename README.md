@@ -24,7 +24,7 @@ Keras经典网络搭建
 ### General NN
 #### Classifier
 #### Regressor
-models/pytorch/regression for dataset curve1
+- models/pytorch/regression for dataset curve1
 ![](./assets/mlp_pytorch.gif)
 #### CNN
 
