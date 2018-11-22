@@ -23,18 +23,15 @@ class TestCNN(unittest.TestCase):
 
     def test_cnn(self):
         logger.info("start to load data")
-        x, y = load_mnist()
+        x, y, _, _ = load_mnist()
         logger.info("data loaded")
         # 1. Input Data
         if PUSH:
-            train_x, train_y = x[:100], y[:100]
-            test_x, test_y = x[100:120], y[100:120]
-            val_x, val_y = x[120:140], y[120:140]
+            splitter = [100, 120, 140]
         else:
-            train_x, train_y = x[:1000], y[:1000]
-            test_x, test_y = x[1000:1200], y[1000:1200]
-            val_x, val_y = x[1200:1400], y[1200:1400]
-
+            splitter = [1000, 1200, 1400]
+        train_x, test_x, val_x, _ = np.split(x, splitter)
+        train_y, test_y, val_y, _ = np.split(y, splitter)
         img_h = 28
         img_w = 28
         channel = 1
