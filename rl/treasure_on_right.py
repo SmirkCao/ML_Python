@@ -5,19 +5,19 @@ import logging
 import pandas as pd
 import numpy as np
 
-N_STATES = 6
-
 
 class RL(object):
     def __init__(self,
                  max_episodes=13,
                  actions=[],
                  alpha=0.1,
-                 gamma=0.9):
+                 gamma=0.9,
+                 env=None):
         self.max_episodes = max_episodes
         self.actions = actions
         self.alpha = alpha
         self.gamma = gamma
+        self.env = env
 
     def choose_action(self, s):
         raise NotImplemented
@@ -33,11 +33,13 @@ class EpsilonGreddyQ(RL):
                  alpha=0.1,
                  epsilon=0.1,
                  gamma=0.9,
-                 n_states=None):
+                 n_states=None,
+                 env=None):
         super().__init__(max_episodes=max_episodes,
                          actions=actions,
                          alpha=alpha,
-                         gamma=gamma)
+                         gamma=gamma,
+                         env=env)
         self.epsilon = epsilon
         self.q_table = pd.DataFrame(np.zeros((n_states, len(self.actions))),
                                     columns=self.actions)
@@ -55,7 +57,9 @@ class EpsilonGreddyQ(RL):
         return a
 
     def learn(self):
-        np.random.seed(2)
+        if self.env is None:
+            raise ValueError
+        np.random.seed(2016)
         for episode in range(self.max_episodes):
             step_counter = 0
             s = 0
@@ -63,7 +67,7 @@ class EpsilonGreddyQ(RL):
             # update_env(s, episode, step_counter)
             while not is_terminated:
                 a = self.choose_action(s)
-                s_, r = get_env_feedback(s, a)
+                s_, r = self.env.get_env_feedback(s, a)
 
                 q_pred = self.q_table.loc[s, a]
 
@@ -83,40 +87,57 @@ class EpsilonGreddyQ(RL):
         return self.q_table
 
 
-def get_env_feedback(s, a):
-    """
-
-    :param s: state
-    :param a: action
-    :return: r: reward{terminal: 1, otherwise: 0}
-    """
-
-    if a == "right":
-        if s == N_STATES - 2:
-            next_state = "terminal"
-            r = 1
+class Environment(object):
+    def __init__(self,
+                 states=None,
+                 actions=None):
+        if states is None:
+            raise ValueError
         else:
-            next_state = s + 1
+            self.states = states
+        if actions is None:
+            raise ValueError
+        else:
+            self.actions = actions
+
+    def get_env_feedback(self, s, a):
+        raise NotImplemented
+
+    def update(self):
+        pass
+
+
+class TreasureOnRight(Environment):
+    def get_env_feedback(self, s, a):
+        """
+
+           :param s: state
+           :param a: action
+           :return: r: reward{terminal: 1, otherwise: 0}
+           """
+
+        if a == "right":
+            if s == self.states - 2:
+                next_state = "terminal"
+                r = 1
+            else:
+                next_state = s + 1
+                r = 0
+        else:
             r = 0
-    else:
-        r = 0
-        if s == 0:
-            next_state = s
-        else:
-            next_state = s - 1
+            if s == 0:
+                next_state = s
+            else:
+                next_state = s - 1
 
-    return next_state, r
-
-
-def update_env(state, episode, step_counter):
-    # just for response
-    env_list = ["-"] * (N_STATES - 1) + ["T"]
+        return next_state, r
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger(__name__)
 
-    Q = EpsilonGreddyQ(actions=["left", "right"], n_states=6)
+    E = TreasureOnRight(states=6, actions=["left", "right"])
+    Q = EpsilonGreddyQ(actions=["left", "right"], n_states=6, env=E)
     q_table = Q.learn()
     logger.info(q_table)
